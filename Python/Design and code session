@@ -32,8 +32,8 @@ So what steps does a program to encode a short piece of text have?
 1	Set up the plain (unencoded) string of letters
 2	Set up the codes_string, emtpy to start with, that will hold the encoded text
 3	Go through the plain_string, for each letter
-4		work out how much to shift this letter
-5		shift it by that much
+4		work out what the current letter is
+5		shift it by the right amount
 6		add the result onto the code_string
 7		until you reach the end of the plain_string
 8	Print the code_string
