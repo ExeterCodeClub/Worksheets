@@ -1,0 +1,100 @@
+I'm getting a bit concerned that, while we have done a lot of coding with the two groups, we still haven't looked at the process of creating a program from scratch: also they have now done quite a bit of typing in code that they have not had explained to them.
+
+I'd like to suggest that we show them (and I'm really thinking of the Maynards group) how to write a program for a given task and also get them to build on that to write a program for themselves.  The task I have in mind (and others are welcome to suggest other areas) is the encrypting and decrypting of a short piece of text.  What follows is an outline of a "script" for a "teacher-led" session.  I know we haven't done too many of those, largely because the "get stuck straight in" approach gives a useful contrast to what they see at school, but using this method occasionally might be the best way of teaching a new skill.
+
+
+A Session on Encryption
+
+Today we are going to look at how to write a program to turn a piece of text into a coded form so that no-one who doesn't know the code can read it.
+
+I'm sure you know how to make a very simple code, taking each letter in the original text and replacing it by the following letter in the alphabet.
+
+So     Harry Potter    becomes    Ibssz!Qpuufs
+
+The encoded text looks suitably unlike the original (especially the "!" - we'll come back to that later), but this code is broken very easily with more than a few characters or any clue as to the content, by analysing the letter frequencies.  This relies on two facts - every letter in the coded text corresponds to a single letter in the plain text (the three "s"s were all "r"s in the original, the two "u"s were both "t"s), and - the frequency of each letter in a typical piece of English text is well known - e 13%, t 9%, a,o 8%, n,i 7%, h,r,s 6% and so on.  [Homework handout with encoded text and letter frequency chart]
+
+But suppose we move different letters by different amounts?
+
+Have any of you heard of the "Enigma Machine"?  Or "Bletchly Park"?  Or "Alan Turing"?
+
+During World War 2, the German Forces used Enigma Machines to encrypt their radio messages telling troops and ships (particularly submarines) where to move and when to attack.  The British Government set up a Government Code and Cypher School (GC&CS) at Bletchly Park, north of London, to try to decode these messages.  The machine was a bit like a typewriter but with lit up letters rather than hammers.  It also had plugboards (a bit like an overgrown version of the breadboards we have used) and mechanical gears or rotors.  When you press a letter on its keyboard, say an "A", a letter would light up, perhaps a "Q" and the rotors would move on a notch.  You would write down the Q as the first letter of the coded message.  If you hit A again you would get a different letter, say "H", because thet rotors were in a different position, and the rotors moved again.  If you hit A again you would get a different letter again and so on.  Now word frequency analysis is of no help to you and, unless you have the key, which in this case means knowing the initial position of the rotors, the code is virtually unbreakable - at least that is what the Germans thought.
+
+[if asked, discuss code v. cypher]     [after the War, GC&CS moved to Cheltenham and became GCHQ]
+
+Alan Turing was a Cambridge mathematician who worked with others at BP to decode the messages.  They built what was effectively a mechanical computer to speed up the process and then, with a Post Office engineer called Tommy Flowers, the first programable electronic computer, Colossus.
+
+So, to make our code better we will still just move the letters on a bit, but change how much we move on after each letter.  We'll keep it simple by moving the first letter on by 1, the second by 2, the third by 3, the fourth by 4 and then go back to 1, then 2, 3, 4.
+
+So Harry becoms Icuvz and the two "r"s are encoded by different letters.
+
+So what steps does a program to encode a short piece of text have?
+
+1	Set up the plain (unencoded) string of letters
+2	Set up the codes_string, emtpy to start with, that will hold the encoded text
+3	Go through the plain_string, for each letter
+4		work out what the current letter is
+5		shift it by the right amount
+6		add the result onto the code_string
+7		until you reach the end of the plain_string
+8	Print the code_string
+
+The first two steps are quite easy and the third one is just a "for" loop which we start at 0 and count to the length of the plain_string - luckily there is a function len(plain_string) which will tell us this.  Step four needs to know how far we have gone with the counting, in order to know how big the shift is.  We can do this by looking at the loop counter and seeing what its remainder on division by 4 is, then adding 1 [Why do we need to add one?].  In Python the operator "%" does the job for us.  So 5%2 is 1; 6%2 is 0; 13%4 is 1; 13%5 is 3.  Step 5 is trickier than it looks.  We want to add a number (1, 2, 3 or 4) to the current letter - but while computers understand letters and numbers, they don't understand adding the two together - it's like saying "What is three oranges plus five apples?".  But there is another code for converting letters (or digits or punctuation marks) to numbers and back - it's called the American Standard Code for Information Interchange or ASCII for short.  So line 5 becomes.
+
+5.1		find the ASCII code for the current letter
+5.2		add the shift
+5.3		find the new letter whose ASCII code is that number
+
+A space, like the one between Harry and Potter in the very first example, also has an ASCII code - after all, it is a character that you have to type when writing on the computer.  It so happens that the character one higher  is the exclamation mark , which is why the space in that first example was replaced by "!".
+
+While computers don't like adding numbers to letters or strings, they're quite happy (usually) adding letters to strings - so the python for step 6 looks like 		code_string = code_string + new_letter
+
+[Though this looks a bit like an equation in Maths, it clearly isn't, because the two sides are obviously not equal.  In Python a line like this, with an "=" sign in it, should be read as "Look at the right-hand side - it says add new_letter to code_string - do that - now set code_string equal to the result"] 
+
+In python we don't even need step 7 - it's part of the for loop, though we have to make sure the indentation shows this, when we write the print statement at line 8.
+
+So the final code should look like this - check exactly how it corresponds with the steps above.  [Sometimes writing this sort of sketch for a program, half-way between normal English and the code for a programming language (like Python), is called pseudo-code]
+
+When you have typed it in, check it carefully and save it as encrypt1.py, then run it.  Check the result by hand.  There is no need to type in the comments.
+
+plain_string = "Harry Potter" 		    #set up the plain_string string
+code_string = ""                            #encoded string starts off empty
+for i in range(0, len(plain_string)):       #go through the plain_string string
+    letter = plain_string[i]                #letter by letter - note that the
+					    #first letter in the string is plain_string[0]
+    asc = ord(letter)                       #use the ord() function to find the ascii code of the letter
+    shift = i % 4 + 1                       #choose 1 to 4 to add to the code
+    new_letter = chr(asc + shift)           #make the new_letter the one whose ascii code is asc + shift
+    code_string = code_string + newletter   #add this onto the encoded string
+
+print codes                                 #output the result
+
+pause for students to do it
+
+When you are happy with the program change the first line to encode a different string.
+
+If would be much better if the user typed in the text to encode.  In Python we get input from the user using another function raw_input('User prompt '), where 'User prompt ' is what appears on the screen to tell the user to type something in.  Replace the first line of our program with
+
+plain_string = raw_input('Text to encode? ')
+
+and see how it works.
+
+pause for students to do it
+
+The Germans changed their settings - the equivalent of our 1234 pattern of shifts - every day.  Even if the British found the settings for one day, they would be no use to them for the next day's messages.  It would be good if we could easily change the coding in our program.  We could type in a pattern like "135240".  This would mean "Shift the first character by 1, the second by 3, the third by 5, the fourth by 2, the fifth by 4 and the sixth by 0, then repeat the pattern."  We would need to get the user to type in the string by putting in a new line of code, similar to our current first line, to get the coding_string and also to replace the line which calculates the shift with two lines.  Make the changes and check the program.  [Testing values?]
+
+ coding_string = raw_input('Sequence to use for encoding? ')		#get the user to input the coding string
+
+    digit = coding_string[i % len(coding_string)]
+                                        #find the right digit to use this time
+    shift = int(digit) +1               #convert the digit to a number
+
+Note that coding_string is a string (the clue is in the name) and so digit is a character.  This means that as it stands our program can only do shifts 0 to 9 (if we try to put in 10 it will be treated as one then zero) and also that we need to use the int() function to turn the character digit into its corresponding whole number.
+
+pause for students to do it    
+    
+Great!! Now we have a really good program to encrypt a string of text.  Oh dear, I'm sure I've forgotten to do something - Oh yes, we now need a progam to decrypt the text!  I haven't had time to do that so I'm leaving to you as an exercise.  ;-)
+
+
+Some of the above would appear on a handout, or possibly as presentation slides.  [] denotes optional material which one might want to use depending on time and questions from the students.
+
+I'd be happy to hear suggestions and if anyone has time perhaps they could check the sheet, esp. coding (Python 2.7).
